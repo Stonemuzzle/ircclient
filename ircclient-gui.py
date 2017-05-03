@@ -4,6 +4,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, QObject
 from gui import Ui_MainWindow
 import socket
 import configparser
+import datetime
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -36,7 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("senderObject done")
 
     def parse_line(self, CurrentLine):
-        outLine = "Empty"
+        outLine = datetime.datetime.now().strftime('%X')
 
         SplitLine = CurrentLine.split(":")
         internalList = (SplitLine[1]).split()
@@ -48,13 +49,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             senderString = internalList[0]
             senderList = senderString.split("!")
             senderName = senderList[0]
-            outLine = "<" + senderName + "> " + messageText + "\r\n"
+            outLine = outLine + " <" + senderName + "> " + messageText + "\r\n"
         else:
-            outLine = messageText
+            outLine = outLine + " " + messageText
         print(SplitLine)
         if SplitLine[0] == "PING ":
             PongLine = "PONG " + SplitLine[1] + "\r\n"
-            outLine = PongLine
+            outLine = outLine + " " + PongLine
+            self.send_line(PongLine)
         if messageList[-1] == "response":
             print("Sending response")
             nick = settings.Nick
@@ -63,19 +65,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             UserString = "USER " + nick + " 1 1 1 :" + real + "\r\n"
             self.send_line(NickString)
             self.send_line(UserString)
-            outLine = "User info sent"
+            outLine = outLine + " User info sent"
             print("Sent response")
         if messageList[-1] == "+i":
             print("Joining channel")
             ChanJoinString = "JOIN " + settings.Channel + "\r\n"
-            outLine = ChanJoinString
+            outLine = outLine + " " + ChanJoinString
+            self.send_line(ChanJoinString)
 
         self.textWindow.append(outLine)
 
     def submitText(self):
         messageText = str(self.submitBox.text())
         if messageText[0] == "/":
-            print(messageText[1:4])
             if messageText[1:4] == "msg":
                 targetName = messageText.split()
                 bodyText = " ".join(targetName[2:])
@@ -132,7 +134,6 @@ class messageThread(QThread):
             self.lineReader.emit(TrimmedLine)
 
     def submitMessage(self, messageText):
-        #print("messageText received. Sending.")
         self.SockObj.send(messageText.encode('utf-8'))
 
 
