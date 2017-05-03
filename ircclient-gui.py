@@ -4,7 +4,6 @@ from PyQt5.QtCore import QThread, pyqtSignal, QObject
 from gui import Ui_MainWindow
 import socket
 import configparser
-import copy
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -77,12 +76,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def submitText(self):
         messageText = str(self.submitBox.text())
         if messageText[0] == "/":
-            finalText = messageText[1:] + "\r\n"
-            self.textWindow.append(messageText)
+            print(messageText[1:4])
+            if messageText[1:4] == "msg":
+                targetName = messageText.split()
+                bodyText = " ".join(targetName[2:])
+                finalText = "PRIVMSG " + targetName[1] + " :" + bodyText + "\r\n"
+            else:
+                finalText = messageText[1:] + "\r\n"
+                self.textWindow.append(messageText)
         else:
             finalText = "PRIVMSG " + settings.Channel + " :" + messageText + "\r\n"
             self.textWindow.append("<" + settings.Nick + "> " + messageText)
         self.send_line(finalText)
+        if self.chkEcho.isChecked():
+            print("messageText: " + messageText)
+            print("finalText: " + finalText)
         self.submitBox.clear()
 
     def send_line(self, messageText):

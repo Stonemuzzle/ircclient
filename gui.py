@@ -26,6 +26,9 @@ class Ui_MainWindow(object):
         self.connectButton = QtWidgets.QPushButton(self.centralwidget)
         self.connectButton.setGeometry(QtCore.QRect(-1, 0, 75, 21))
         self.connectButton.setObjectName("connectButton")
+        self.chkEcho = QtWidgets.QCheckBox(self.centralwidget)
+        self.chkEcho.setGeometry(QtCore.QRect(710, 0, 70, 17))
+        self.chkEcho.setObjectName("chkEcho")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -42,4 +45,5 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.connectButton.setText(_translate("MainWindow", "Connect"))
+        self.chkEcho.setText(_translate("MainWindow", "Echo?"))
 
