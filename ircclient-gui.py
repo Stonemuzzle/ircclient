@@ -42,7 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         internalList = (SplitLine[1]).split()
         messageText = ":".join(SplitLine[2:])
         messageList = (SplitLine[-1]).split()
-        print(SplitLine)
+        #print(SplitLine)
 
         if len(internalList) == 3 and internalList[1] == "PRIVMSG":
             senderString = internalList[0]
@@ -51,25 +51,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             outLine = "<" + senderName + "> " + messageText + "\r\n"
         else:
             outLine = messageText
-
-        if messageList[0] == "PING":
+        print(SplitLine)
+        if SplitLine[0] == "PING ":
             PongLine = "PONG " + SplitLine[1] + "\r\n"
-            self.send_line(PongLine)
+            outLine = PongLine
         if messageList[-1] == "response":
             print("Sending response")
             nick = settings.Nick
             real = settings.RealName
             NickString = "NICK " + nick + "\r\n"
             UserString = "USER " + nick + " 1 1 1 :" + real + "\r\n"
-            print(NickString)
-            print(UserString)
             self.send_line(NickString)
             self.send_line(UserString)
+            outLine = "User info sent"
             print("Sent response")
         if messageList[-1] == "+i":
             print("Joining channel")
             ChanJoinString = "JOIN " + settings.Channel + "\r\n"
-            self.send_line(ChanJoinString)
+            outLine = ChanJoinString
 
         self.textWindow.append(outLine)
 
@@ -133,7 +132,7 @@ class messageThread(QThread):
             self.lineReader.emit(TrimmedLine)
 
     def submitMessage(self, messageText):
-        print("messageText received. Sending.")
+        #print("messageText received. Sending.")
         self.SockObj.send(messageText.encode('utf-8'))
 
 
